@@ -3,12 +3,11 @@ import pandas as pd
 from typing import Dict, Any
 
 def show_homepage():
-    """Display the homepage with compliance assessment"""
-    
-    # Check for dark mode
+
+    # Checkin g for dark mode
     dark_mode = st.session_state.get('dark_mode', False)
     
-    # Custom CSS for the homepage with blue/white/grey theme
+    # Custom CSS for the homepage with blue/white/grey theme (we might change this)
     st.markdown(f"""
     <style>
     /* Blue/White/Grey Background */
@@ -207,20 +206,18 @@ def show_homepage():
 def show_landing_page():
     """Display the main landing page"""
     
-    # Main title and subtitle
-    st.markdown('<h1 class="main-title">Stay Compliant with EU Regulations</h1>', unsafe_allow_html=True)
-    
+    st.markdown('<h3 style="margin-bottom: 1rem;">Stay Compliant with EU Regulations</h3>', unsafe_allow_html=True)
+
     st.markdown('''
     <p class="subtitle">
-    Track and manage EU regulatory compliance for your business. Get personalized insights, 
-    deadlines, and action plans based on your company profile.
+    Every year the European Union enacts around 2000 regulations, decisions, and directives...blah blah blah
     </p>
     ''', unsafe_allow_html=True)
-    
+
     # Start button
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        if st.button("🚀 Start Compliance Assessment", 
+        if st.button("Create your business' unique profile",
                     type="primary", 
                     use_container_width=True,
                     help="Begin your personalized EU compliance assessment"):
@@ -228,7 +225,6 @@ def show_landing_page():
             st.session_state.current_step = 1
             st.rerun()
     
-    # Feature highlights
     st.markdown("---")
     
     col1, col2, col3 = st.columns(3)
@@ -236,7 +232,7 @@ def show_landing_page():
     with col1:
         st.markdown("""
         <div class="feature-card">
-        <h3>🎯 Personalized Analysis</h3>
+        <h3>Personalized Analysis</h3>
         <p>Get tailored compliance recommendations based on your specific business profile and operations.</p>
         </div>
         """, unsafe_allow_html=True)
@@ -244,15 +240,15 @@ def show_landing_page():
     with col2:
         st.markdown("""
         <div class="feature-card">
-        <h3>🤖 AI-Powered Insights</h3>
-        <p>Advanced AI models analyze thousands of EU regulations to find what's most relevant to you.</p>
+        <h3>NLP-Based Regulation Matching</h3>
+        <p>Advanced HuggingFace models analyse thousands of EU regulations to find what's most relevant to you.</p>
         </div>
         """, unsafe_allow_html=True)
     
     with col3:
         st.markdown("""
         <div class="feature-card">
-        <h3>📊 Interactive Dashboard</h3>
+        <h3>Interactive Dashboard</h3>
         <p>Track compliance status, deadlines, and action items in an intuitive, easy-to-use interface.</p>
         </div>
         """, unsafe_allow_html=True)
@@ -301,7 +297,7 @@ def show_assessment():
     col1, col2, col3, col4 = st.columns([1, 1, 1, 1])
     
     with col1:
-        if st.button("🏠 Home", use_container_width=True):
+        if st.button("Home", use_container_width=True):
             st.session_state.assessment_started = False
             st.session_state.current_step = 1
             st.rerun()

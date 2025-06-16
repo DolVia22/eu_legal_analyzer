@@ -17,39 +17,41 @@ from models.text_analyzer import TextAnalyzer
 from analysis.enhanced_legal_analyzer import EnhancedLegalAnalyzer
 from ui.homepage import show_homepage
 
-# Page configuration
+print("EU Regulation Analyser is starting (finally)...")
 st.set_page_config(
-    page_title="EU Legal Analyzer",
+    page_title="EU Regulation Analyzer",
     page_icon="🇪🇺",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for blue/white/grey theme
+# Custom CSS for blue/white/grey theme (temporary)
 def load_css():
     dark_mode = st.session_state.get('dark_mode', False)
     
     css = f"""
     <style>
-    /* Blue/White/Grey Theme */
+
     .stApp {{
-        background-color: {'#1e2a3a' if dark_mode else '#f8f9fa'};
-        color: {'#ffffff' if dark_mode else '#2c3e50'};
+        background: #ffffff !important;
+        background-image: none !important;
     }}
+    
+    header, footer, .reportview-container .main footer {{
+    visibility: hidden;
+}}
+
     
     .main-header {{
         font-size: 3rem;
         font-weight: bold;
         text-align: center;
         margin-bottom: 2rem;
-        background: linear-gradient(90deg, #2c5aa0, #4a90e2);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
+        color: #2c3e50;
     }}
     
     .metric-card {{
-        background: linear-gradient(135deg, #4a90e2 0%, #2c5aa0 100%);
+        background-color: #2c5aa0;
         padding: 1rem;
         border-radius: 10px;
         color: white;
@@ -59,7 +61,7 @@ def load_css():
     }}
     
     .relevance-high {{
-        background: linear-gradient(135deg, #2c5aa0 0%, #4a90e2 100%);
+        background-color: #2c5aa0;
         padding: 0.5rem;
         border-radius: 5px;
         color: white;
@@ -67,7 +69,7 @@ def load_css():
     }}
     
     .relevance-medium {{
-        background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+        background-color: #6c757d;
         padding: 0.5rem;
         border-radius: 5px;
         color: white;
@@ -75,7 +77,7 @@ def load_css():
     }}
     
     .relevance-low {{
-        background: linear-gradient(135deg, #adb5bd 0%, #6c757d 100%);
+        background-color: #adb5bd;
         padding: 0.5rem;
         border-radius: 5px;
         color: white;
@@ -115,7 +117,7 @@ def load_css():
     
     /* Button styling */
     .stButton > button {{
-        background: linear-gradient(135deg, #4a90e2 0%, #2c5aa0 100%);
+        background-color: #2c5aa0;
         color: white;
         border: none;
         border-radius: 8px;
@@ -123,9 +125,7 @@ def load_css():
     }}
     
     .stButton > button:hover {{
-        background: linear-gradient(135deg, #2c5aa0 0%, #1e3a5f 100%);
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+        background-color: #2c5aa0;
     }}
     </style>
     """
@@ -148,14 +148,14 @@ def init_session_state():
 def get_text_analyzer():
     """Lazy load text analyzer only when needed"""
     if st.session_state.text_analyzer is None:
-        with st.spinner("Loading AI models..."):
+        with st.spinner("Loading NLP models..."):
             st.session_state.text_analyzer = TextAnalyzer()
     return st.session_state.text_analyzer
 
 def get_enhanced_analyzer():
     """Lazy load enhanced legal analyzer only when needed"""
     if st.session_state.enhanced_analyzer is None:
-        with st.spinner("Loading enhanced legal analyzer..."):
+        with st.spinner("Loading the latest NLP models..."):
             st.session_state.enhanced_analyzer = EnhancedLegalAnalyzer()
     return st.session_state.enhanced_analyzer
 
@@ -171,10 +171,10 @@ def main():
     
     # Sidebar
     with st.sidebar:
-        st.title("EU Legal Analyzer")
+        st.title("EU Regulation Analyzer")
         
         # Dark mode toggle
-        dark_mode = st.toggle("🌙 Dark Mode", value=st.session_state.dark_mode)
+        dark_mode = st.toggle("Dark Mode", value=st.session_state.dark_mode)
         if dark_mode != st.session_state.dark_mode:
             st.session_state.dark_mode = dark_mode
             st.rerun()
@@ -182,7 +182,7 @@ def main():
         # Navigation menu
         selected = option_menu(
             menu_title="Navigation",
-            options=["Home", "Dashboard", "Company Profile", "Legal Analysis", "Data Management", "Settings"],
+            options=["Home", "Company Profile", "Compliance Analysis", "Regulations Database", "Settings"],
             icons=["house", "graph-up", "building", "search", "database", "gear"],
             menu_icon="cast",
             default_index=0,
@@ -202,93 +202,17 @@ def main():
     # Main content
     if selected == "Home":
         show_homepage()
-    elif selected == "Dashboard":
-        show_dashboard()
     elif selected == "Company Profile":
         show_company_profile()
-    elif selected == "Legal Analysis":
+    elif selected == "Compliance Analysis":
         show_legal_analysis()
-    elif selected == "Data Management":
+    elif selected == "Regulations Database":
         show_data_management()
     elif selected == "Settings":
         show_settings()
 
-def show_dashboard():
-    st.markdown('<h1 class="main-header">EU Legal Compliance Dashboard</h1>', unsafe_allow_html=True)
-    
-    # Metrics row
-    col1, col2, col3, col4 = st.columns(4)
-    
-    with col1:
-        legal_acts_count = st.session_state.db_manager.get_legal_act_count()
-        st.markdown(f'''
-        <div class="metric-card">
-            <h3>{legal_acts_count}</h3>
-            <p>Legal Acts in Database</p>
-        </div>
-        ''', unsafe_allow_html=True)
-    
-    with col2:
-        company_profiles = len(st.session_state.db_manager.get_company_profiles())
-        st.markdown(f'''
-        <div class="metric-card">
-            <h3>{company_profiles}</h3>
-            <p>Company Profiles</p>
-        </div>
-        ''', unsafe_allow_html=True)
-    
-    with col3:
-        st.markdown(f'''
-        <div class="metric-card">
-            <h3>AI-Powered</h3>
-            <p>Analysis Engine</p>
-        </div>
-        ''', unsafe_allow_html=True)
-    
-    with col4:
-        st.markdown(f'''
-        <div class="metric-card">
-            <h3>Real-time</h3>
-            <p>EUR-Lex Integration</p>
-        </div>
-        ''', unsafe_allow_html=True)
-    
-    st.markdown("---")
-    
-    # Recent activity and charts
-    col1, col2 = st.columns([2, 1])
-    
-    with col1:
-        st.subheader("📊 Legal Acts by Category")
-        
-        # Sample data for demonstration
-        categories_data = {
-            'Category': ['Data Protection', 'Financial Services', 'Environmental', 'Competition', 'Employment'],
-            'Count': [45, 32, 28, 22, 18]
-        }
-        
-        fig = px.bar(categories_data, x='Category', y='Count', 
-                    title="Distribution of Legal Acts by Category",
-                    color='Count', color_continuous_scale='viridis')
-        st.plotly_chart(fig, use_container_width=True)
-    
-    with col2:
-        st.subheader("🎯 Quick Actions")
-        
-        if st.button("🏢 Create Company Profile", use_container_width=True):
-            st.switch_page("Company Profile")
-        
-        if st.button("🔍 Analyze Legal Compliance", use_container_width=True):
-            st.switch_page("Legal Analysis")
-        
-        if st.button("📥 Update Legal Database", use_container_width=True):
-            with st.spinner("Scraping latest legal acts..."):
-                scraper = get_scraper()
-                new_acts = scraper.scrape_recent_acts(days=7, max_results=10)
-                st.success(f"Found {len(new_acts)} new legal acts!")
-
 def show_company_profile():
-    st.title("🏢 Company Profile Management")
+    st.title("Company Profile Management")
     
     tab1, tab2 = st.tabs(["Create Profile", "Existing Profiles"])
     
@@ -301,7 +225,7 @@ def show_company_profile():
             with col1:
                 company_name = st.text_input("Company Name *", placeholder="Enter company name")
                 industry = st.selectbox("Industry *", [
-                    "Technology", "Finance", "Healthcare", "Manufacturing", 
+                    "Technology", "Automotive", "Finance", "Healthcare", "Manufacturing",
                     "Retail", "Energy", "Transportation", "Agriculture", 
                     "Construction", "Telecommunications", "Other"
                 ])
@@ -342,49 +266,12 @@ def show_company_profile():
                     }
                     
                     profile_id = st.session_state.db_manager.save_company_profile(profile_data)
-                    st.success(f"✅ Company profile created successfully! (ID: {profile_id})")
+                    st.success(f"Company profile created successfully! (ID: {profile_id})")
                 else:
                     st.error("Please fill in all required fields marked with *")
-    
-    with tab2:
-        st.subheader("Existing Company Profiles")
-        
-        profiles = st.session_state.db_manager.get_company_profiles()
-        
-        if profiles:
-            df = pd.DataFrame(profiles)
-            df = df[['id', 'company_name', 'industry', 'company_size', 'location', 'created_at']]
-            
-            gb = GridOptionsBuilder.from_dataframe(df)
-            gb.configure_pagination(paginationAutoPageSize=True)
-            gb.configure_side_bar()
-            gb.configure_selection('single')
-            grid_options = gb.build()
-            
-            grid_response = AgGrid(
-                df,
-                gridOptions=grid_options,
-                data_return_mode='AS_INPUT',
-                update_mode='MODEL_CHANGED',
-                fit_columns_on_grid_load=True,
-                theme='streamlit',
-                enable_enterprise_modules=True,
-                height=400,
-                width='100%'
-            )
-            
-            if grid_response['selected_rows']:
-                selected_profile = grid_response['selected_rows'][0]
-                st.info(f"Selected: {selected_profile['company_name']}")
-                
-                if st.button("🔍 Analyze Legal Compliance for This Company"):
-                    st.session_state.selected_company_id = selected_profile['id']
-                    st.switch_page("Legal Analysis")
-        else:
-            st.info("No company profiles found. Create your first profile above!")
 
 def show_legal_analysis():
-    st.title("🔍 Legal Compliance Analysis")
+    st.title("Legal Compliance Analysis")
     
     # Company selection
     profiles = st.session_state.db_manager.get_company_profiles()
@@ -413,11 +300,11 @@ def show_legal_analysis():
         min_relevance = st.slider("Minimum Relevance Score", 0.0, 1.0, 0.3, 0.1)
     
     with col3:
-        if st.button("🚀 Run Analysis", use_container_width=True):
+        if st.button("Run Analysis", use_container_width=True):
             run_legal_analysis(selected_profile, max_results, min_relevance)
     
     # Display existing analysis results
-    st.subheader("📋 Analysis Results")
+    st.subheader("Analysis Results")
     
     results = st.session_state.db_manager.get_analysis_results(selected_company_id, max_results)
     
@@ -435,13 +322,13 @@ def show_legal_analysis():
 def run_legal_analysis(company_profile, max_results, min_relevance):
     """Run the enhanced legal analysis for a company"""
     
-    with st.spinner("🔍 Running enhanced legal analysis..."):
+    with st.spinner("Matching regulations to your business..."):
         # Use the enhanced analyzer for comprehensive analysis
         enhanced_analyzer = get_enhanced_analyzer()
         
         # Get database stats
         stats = enhanced_analyzer.get_database_stats()
-        st.info(f"📊 Analyzing against {stats['total_legal_acts']} legal acts in database")
+        st.info(f"Analyzing against {stats['total_legal_acts']} legal acts in database")
         
         # Run comprehensive analysis
         analysis_results = enhanced_analyzer.analyze_company_legal_requirements(
@@ -465,24 +352,23 @@ def run_legal_analysis(company_profile, max_results, min_relevance):
             except Exception as e:
                 st.warning(f"Could not save result for {result.get('title', 'Unknown')}: {e}")
         
-        st.success(f"✅ Enhanced analysis complete! Found {len(filtered_results)} relevant legal acts (saved {saved_count} to database).")
+        st.success(f"Enhanced analysis complete! Found {len(filtered_results)} relevant legal acts (saved {saved_count} to database).")
         
         # Display immediate results
         if filtered_results:
-            st.subheader("🎯 Top Relevant Legal Acts")
+            st.subheader("Top Relevant Legal Acts")
             display_enhanced_analysis_results(filtered_results[:10])  # Show top 10 immediately
 
 def display_enhanced_analysis_results(results):
-    """Display enhanced analysis results with improved formatting"""
-    
+
     for i, result in enumerate(results, 1):
         with st.expander(f"#{i} {result['title']} (Score: {result['relevance_score']:.3f})", expanded=i <= 3):
             col1, col2 = st.columns([3, 1])
             
             with col1:
-                st.write(f"**CELEX:** {result.get('celex_number', 'N/A')}")
-                st.write(f"**Type:** {result.get('document_type', 'N/A')}")
-                st.write(f"**Subject:** {result.get('subject_matter', 'N/A')}")
+                st.write(f"**CELEX:** {result.get('Celex ID', 'N/A')}")
+                st.write(f"**Type:** {result.get('Act Type', 'N/A')}")
+                st.write(f"**Subject:** {result.get('Topic', 'N/A')}")
                 
                 if result.get('summary'):
                     st.write(f"**Summary:** {result['summary'][:300]}...")
@@ -497,9 +383,9 @@ def display_enhanced_analysis_results(results):
                     with score_cols[0]:
                         st.metric("TF-IDF", f"{scores['tfidf']:.3f}")
                     with score_cols[1]:
-                        st.metric("Keywords", f"{scores['keyword']:.3f}")
+                        st.metric("Keywords", f"{scores['Keywords']:.3f}")
                     with score_cols[2]:
-                        st.metric("Industry", f"{scores['industry']:.3f}")
+                        st.metric("Industry", f"{scores['Industry']:.3f}")
                     with score_cols[3]:
                         st.metric("Characteristics", f"{scores['characteristics']:.3f}")
             
@@ -517,8 +403,7 @@ def display_enhanced_analysis_results(results):
                     st.markdown(f"[📄 View Document]({result['url']})")
 
 def display_analysis_results(results):
-    """Display the analysis results in an interactive format"""
-    
+
     # Filters
     col1, col2, col3 = st.columns(3)
     
@@ -555,7 +440,7 @@ def display_analysis_results(results):
     if sort_by == "Relevance Score":
         filtered_results.sort(key=lambda x: x['relevance_score'], reverse=True)
     elif sort_by == "Title":
-        filtered_results.sort(key=lambda x: x.get('title', ''))
+        filtered_results.sort(key=lambda x: x.get('Title', ''))
     
     # Display results
     for i, result in enumerate(filtered_results[:20]):  # Show top 20
@@ -594,7 +479,7 @@ def display_analysis_results(results):
                 </div>
                 ''', unsafe_allow_html=True)
                 
-                if st.button(f"📊 Detailed Analysis", key=f"detail_{i}"):
+                if st.button(f"Detailed Analysis", key=f"detail_{i}"):
                     show_detailed_analysis(result)
 
 def show_detailed_analysis(result):
@@ -649,7 +534,7 @@ def show_detailed_analysis(result):
             st.write("- Review quarterly")
 
 def show_data_management():
-    st.title("📊 Data Management")
+    st.title("Data Management")
     
     tab1, tab2, tab3 = st.tabs(["Legal Acts Database", "Scraping Tools", "Export/Import"])
     
@@ -659,7 +544,7 @@ def show_data_management():
         col1, col2 = st.columns([3, 1])
         
         with col1:
-            search_term = st.text_input("🔍 Search Legal Acts", placeholder="Enter keywords to search...")
+            search_term = st.text_input("Search Legal Acts", placeholder="Enter keywords to search...")
         
         with col2:
             if st.button("Search", use_container_width=True):
@@ -692,12 +577,12 @@ def show_data_management():
             days = st.number_input("Days to look back", min_value=1, max_value=365, value=30)
             max_recent = st.number_input("Max results", min_value=1, max_value=500, value=50)
             
-            if st.button("🔄 Scrape Recent Acts"):
+            if st.button("Scrape Recent Acts"):
                 scrape_recent_acts(days, max_recent)
         
         with col2:
             st.write("**Comprehensive Directory Scraping**")
-            st.info("🚀 Use the enhanced scraper to populate the database with comprehensive legal acts")
+            st.info("Use the enhanced scraper to populate the database with comprehensive legal acts")
             
             max_acts = st.number_input("Max acts to scrape", min_value=50, max_value=5000, value=500, step=50)
             
@@ -717,7 +602,7 @@ def show_data_management():
             ])
             max_per_subject = st.number_input("Max per subject", min_value=1, max_value=100, value=20)
             
-            if st.button("🎯 Scrape by Subject"):
+            if st.button("Scrape by Subject"):
                 if subjects:
                     scrape_by_subjects(subjects, max_per_subject)
                 else:
@@ -733,7 +618,7 @@ def show_data_management():
                 for doc_type, count in stats['document_types'].items():
                     st.write(f"• {doc_type or 'Unknown'}: {count}")
             
-            if st.button("🔄 Refresh Stats"):
+            if st.button("Refresh Stats"):
                 st.rerun()
     
     with tab3:
@@ -744,7 +629,7 @@ def show_data_management():
         with col1:
             st.write("**Export Data**")
             
-            if st.button("📥 Export Legal Acts to CSV"):
+            if st.button("Export Legal Acts to CSV"):
                 legal_acts = st.session_state.db_manager.get_legal_acts()
                 if legal_acts:
                     df = pd.DataFrame(legal_acts)
@@ -782,7 +667,7 @@ def run_comprehensive_scraping(max_acts):
             
             # Show initial stats
             initial_stats = scraper.get_scraping_stats()
-            st.info(f"📊 Starting with {initial_stats['total_acts_in_db']} acts in database")
+            st.info(f"Starting with {initial_stats['total_acts_in_db']} acts in database")
             
             # Create progress tracking
             progress_bar = st.progress(0)
@@ -797,17 +682,17 @@ def run_comprehensive_scraping(max_acts):
             progress_bar.progress(1.0)
             status_text.text("Scraping completed!")
             
-            st.success(f"✅ Comprehensive scraping completed!")
-            st.info(f"📈 Scraped {scraped_count} new legal acts")
-            st.info(f"📊 Total acts in database: {final_stats['total_acts_in_db']}")
+            st.success(f"Comprehensive scraping completed!")
+            st.info(f"Scraped {scraped_count} new legal acts")
+            st.info(f"Total acts in database: {final_stats['total_acts_in_db']}")
             
             # Clear progress indicators
             progress_bar.empty()
             status_text.empty()
         
     except Exception as e:
-        st.error(f"❌ Error during comprehensive scraping: {e}")
-        st.info("💡 Try reducing the number of acts or check your internet connection")
+        st.error(f"Error during comprehensive scraping: {e}")
+        st.info("Try reducing the number of acts or check your internet connection")
 
 def scrape_recent_acts(days, max_results):
     """Scrape recent legal acts"""
@@ -829,7 +714,7 @@ def scrape_recent_acts(days, max_results):
                 except Exception as e:
                     st.error(f"Error saving act {act.get('celex_number', 'Unknown')}: {e}")
             
-            st.success(f"✅ Successfully scraped and saved {saved_count} legal acts!")
+            st.success(f"Successfully scraped and saved {saved_count} legal acts!")
             
         except Exception as e:
             st.error(f"Error during scraping: {e}")
@@ -854,70 +739,40 @@ def scrape_by_subjects(subjects, max_per_subject):
                 except Exception as e:
                     st.error(f"Error saving act {act.get('celex_number', 'Unknown')}: {e}")
             
-            st.success(f"✅ Successfully scraped and saved {saved_count} legal acts!")
+            st.success(f"Successfully scraped and saved {saved_count} legal acts!")
             
         except Exception as e:
             st.error(f"Error during scraping: {e}")
 
+# this bit is for dark mode
 def show_settings():
-    st.title("⚙️ Settings")
+    st.title("Settings")
     
-    tab1, tab2, tab3 = st.tabs(["General", "AI Models", "Database"])
+    tab1, tab2, tab3 = st.tabs(["General", "AI Models", "Regulations Database"])
     
     with tab1:
         st.subheader("General Settings")
         
-        # Theme settings
         st.write("**Theme Settings**")
         dark_mode = st.checkbox("Dark Mode", value=st.session_state.dark_mode)
         if dark_mode != st.session_state.dark_mode:
             st.session_state.dark_mode = dark_mode
-        
-        # Language settings
-        st.write("**Language Settings**")
-        language = st.selectbox("Interface Language", ["English", "German", "French", "Spanish"])
-        
-        # Notification settings
-        st.write("**Notifications**")
-        email_notifications = st.checkbox("Email Notifications")
-        browser_notifications = st.checkbox("Browser Notifications")
+
     
     with tab2:
         st.subheader("AI Model Settings")
         
         st.write("**Current Models**")
         st.info("Sentence Transformer: all-MiniLM-L6-v2")
-        st.info("Summarization: facebook/bart-large-cnn")
-        st.info("Classification: facebook/bart-large-mnli")
+        st.info("Summarization: TBA")
+        st.info("Classification: TBA")
         
         st.write("**Model Performance**")
-        if st.button("Test Model Performance"):
-            with st.spinner("Testing models..."):
-                # Test embedding generation
-                test_text = "This is a test document about data protection regulations."
-                embedding = get_text_analyzer().generate_embedding(test_text)
-                st.success(f"✅ Embedding generated successfully (dimension: {len(embedding)})")
+
     
     with tab3:
-        st.subheader("Database Settings")
+        st.subheader("Regulations Database")
         
-        # Database statistics
-        legal_acts_count = st.session_state.db_manager.get_legal_act_count()
-        company_profiles_count = len(st.session_state.db_manager.get_company_profiles())
-        
-        col1, col2 = st.columns(2)
-        with col1:
-            st.metric("Legal Acts", legal_acts_count)
-        with col2:
-            st.metric("Company Profiles", company_profiles_count)
-        
-        # Database maintenance
-        st.write("**Database Maintenance**")
-        if st.button("🧹 Clean Database"):
-            st.info("Database cleaning functionality would be implemented here.")
-        
-        if st.button("🔄 Backup Database"):
-            st.info("Database backup functionality would be implemented here.")
 
 if __name__ == "__main__":
     main()

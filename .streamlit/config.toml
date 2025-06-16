@@ -17,3 +17,25 @@ primaryColor = "#1f4e79"
 backgroundColor = "#ffffff"
 secondaryBackgroundColor = "#f0f2f6"
 textColor = "#262730"
+
+[server]
+runOnSave = false
+
+[watchdog]
+disableWatchdogWarning = true
+
+[theme]
+base = "light"
+
+[server]
+runOnSave = false
+headless = true
+enableCORS = false
+
+[ui]
+hideTopBar = true
+hideSidebarNav = true
+
+[browser]
+gatherUsageStats = false
+
